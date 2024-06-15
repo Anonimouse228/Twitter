@@ -1,9 +1,12 @@
-public class PostService {
-    public static boolean createPost() {
+import java.sql.SQLException;
 
-        return false;
+public class PostService {
+    public static boolean createPost(int authorId, String content) throws SQLException {
+
+        return Database.createPost(authorId, content);
     }
-    public static void editPost() {
+    public static boolean editPost(String content) throws SQLException {
+        return Database.editPost(content);
 
     }
     public static void deletePost() {
@@ -18,12 +21,13 @@ public class PostService {
     public static void getUsersPosts() {
 
     }
-    public static boolean likePost() {
-
+    public static boolean likePost(int id) throws SQLException {
+        Database.like(id);
         return false;
     }
-    public static void unlikePost() {
-
+    public static boolean dislikePost(int id) throws SQLException {
+        Database.dislike(id);
+        return false;
     }
 
 }

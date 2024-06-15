@@ -1,58 +1,70 @@
-import java.util.Objects;
+import java.sql.SQLException;
+import java.util.Date;
 import java.util.Scanner;
+
+import static java.awt.SystemColor.text;
 
 public class UI {
     private int userId;
-    public static void start() {
+    public static void start() throws SQLException {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Welcome to the Shitter!\n" +
-                "1. Registration\n" +
-                "2. LogIn\n" +
-                "3. Exit");
+        System.out.println("""
+                Welcome to the Shitter!
+                1. Registration
+                2. LogIn
+                3. Exit""");
         String choice = scanner.nextLine();
-        if (Objects.equals(choice, "1")) {
-            logIn();
-        } else if (Objects.equals(choice, "2")) {
-            register();
-        } else if (Objects.equals(choice, "3")) {
-            return;
-        }
-        else {
-            System.out.println("Invalid input! please type \"1\", \"2\" or \"3\"!");
-            start();
+        switch (choice) {
+            case "1" -> register();
+            case "2" -> logIn();
+            case "3" -> {}
+
+            case null, default -> {
+                System.out.println("Invalid input! please type \"1\", \"2\" or \"3\"!");
+                start();
+            }
         }
     }
-    private static void register() {
+    private static void register() throws SQLException {
+
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter your desired login:");
         String login = scanner.nextLine();
         System.out.println("Enter your password:");
         String password = scanner.nextLine();
         User user = new User(login, password, false);
+        mainMenu(user);
+
+
         UserService.registerUser(user);
     }
-    private static void logIn() {
+    private static void logIn() throws SQLException {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter your login:");
         String login = scanner.nextLine();
         System.out.println("Enter your password:");
         String password = scanner.nextLine();
         User user = new User(login, password, false);
-        if (UserService.loginUser(user)) {
-            mainMenu(user);
+        if(UserService.loginUser(user)) {
+            System.out.println();
+        }
+        else {
+            System.out.println("Login or password not correct");
+            start();
         }
 
 
     }
-    private static void mainMenu(User user) {
-        System.out.println("\n" +
-                "1. Take a shit(post)\n" +
-                "2. Like a shit(post)\n" +
-                "3. Dislike a shit(post)\n" +
-                "4. Show last N shits\n" +
-                "5. Profile\n " +
-                "6. Log out\n" +
-                "7. Exit");
+    private static void mainMenu(User user) throws SQLException {
+        System.out.println("""
+
+                1. Take a shit(post)
+                2. Like a shit(post)
+                3. Dislike a shit(post)
+                4. Show last N shits
+                5. Your profile
+                6. Log out
+                7. Exit""");
         Scanner scanner = new Scanner(System.in);
         String choice = scanner.nextLine();
 
@@ -64,13 +76,13 @@ public class UI {
                 like(user);
                 break;
             case "3":
-                dislike();
+                dislike(user);
                 break;
             case "4":
                 showPosts();
                 break;
             case "5":
-                showProfile();
+                showProfile(user);
                 break;
             case "6":
 
@@ -82,10 +94,11 @@ public class UI {
     }
 
     private static void profileMenu() {
-        System.out.println("\n" +
-                "1. \n" +
-                "2. \n" +
-                "3. ");
+        System.out.println("""
+
+                1.
+                2.\s
+                3.\s""");
     }
 
     private static void postMenu() {
@@ -106,44 +119,64 @@ public class UI {
 
     }
 
-    private static void post(User user) {
+    private static void post(User user) throws SQLException {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Enter the text:");
-        String text = scanner.nextLine();
-        if (!PostService.createPost()) {
+        String content = scanner.nextLine();
+        if (PostService.createPost(user.getId(), content)) {
+            System.out.println("You successfully shitted!");
+        } else {
             System.out.println("Something went wrong! Please repeat");
             post(user);
-        }
-        else{
-            System.out.println("You successfully shitted!");
         }
         mainMenu(user);
     }
 
-    private static void like(User user) {
+    private static void editPost(User user) throws SQLException {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Enter the id of the post that you'd like to like:");
-        String id = scanner.nextLine();
+        System.out.println("Enter the text:");
+        String content = scanner.nextLine();
+        if (PostService.editPost(content)) {
+            System.out.println("Shit succesfully edited!");
+        } else {
+            System.out.println("Something went wrong! Please repeat");
+            post(user);
+        }
+        mainMenu(user);
+    }
 
-        if (!PostService.likePost()) {
+    private static void like(User user) throws SQLException {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the id of the post that you'd like to like:");
+        int id = scanner.nextInt();
+        if (!PostService.likePost(id)) {
             System.out.println("Something went wrong. Please repeat");
             like(user);
         } else{
             System.out.println("You successfully liked a post!");
-
         }
         mainMenu(user);
     }
-    private static void dislike() {
-
+    private static void dislike(User user) throws SQLException {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the id of the post that you'd like to dislike:");
+        int id = scanner.nextInt();
+        if (!PostService.dislikePost(id)) {
+            System.out.println("Something went wrong. Please repeat");
+            dislike(user);
+        } else{
+            System.out.println("You successfully liked a post!");
+        }
+        mainMenu(user);
     }
 
     private static void showPosts() {
 
     }
-    private static void showProfile() {
- 
+
+    private static void showProfile(User user) {
+
     }
 }

@@ -1,14 +1,17 @@
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
+import java.util.Date;
 
 public class UserService {
-    public static void registerUser(User user) {
+    public static boolean registerUser(User user) throws SQLException {
+        return Database.register(user);
 
     }
-    public static boolean loginUser(User user) {
+    public static boolean loginUser(User user) throws SQLException {
+        return Database.logIn(user);
 
-        return false;
     }
     public static void changePassword(int userId, String oldPassword, String newPassword) {
 
@@ -20,7 +23,11 @@ public class UserService {
 
     }
 
-    private static String hashPassword(String password) {
+    public static void showProfile(User user) {
+        System.out.println(user.toString());
+    }
+
+    public static String hashPassword(String password) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hashBytes = digest.digest(password.getBytes(StandardCharsets.UTF_8));
