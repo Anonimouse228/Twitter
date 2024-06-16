@@ -1,4 +1,6 @@
+import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class User {
@@ -6,7 +8,7 @@ public class User {
     private String password;
     private int id;
     private boolean isAdmin;
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     public User(String login, String password, boolean isAdmin) {
         this.login = login;
@@ -23,8 +25,8 @@ public class User {
         return password;
     }
 
-    public int getId() {
-        return id;
+    public int getId() throws SQLException {
+        return Database.getUserIdByLogin(this.login);
     }
 
     @Override

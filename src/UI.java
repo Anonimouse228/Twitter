@@ -26,17 +26,29 @@ public class UI {
         }
     }
     private static void register() throws SQLException {
-
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter your desired login:");
+        System.out.println("Enter your desired login(no more than 20 symbols):");
         String login = scanner.nextLine();
-        System.out.println("Enter your password:");
+        if (login.length() > 20) {
+            System.out.println("Length of login should be <= 20!");
+            start();
+        }
+
+        System.out.println("Enter your password(no more than 20 symbols):");
         String password = scanner.nextLine();
+        if (password.length() > 20 || password.length() < 4) {
+            System.out.println("Length of password should be <= 20 and >= 4!");
+            start();
+        }
         User user = new User(login, password, false);
-        mainMenu(user);
+        if(!UserService.registerUser(user)) {
+            System.out.println("Something went wrong! Please repeat");
+            start();
+        } else {
+            System.out.println("Successful registration!");
+            mainMenu(user);
+        }
 
-
-        UserService.registerUser(user);
     }
     private static void logIn() throws SQLException {
         Scanner scanner = new Scanner(System.in);
@@ -44,9 +56,11 @@ public class UI {
         String login = scanner.nextLine();
         System.out.println("Enter your password:");
         String password = scanner.nextLine();
-        User user = new User(login, password, false);
+        User user = new User(login, UserService.hashPassword(password), false);
+        System.out.println(user.getPassword());
         if(UserService.loginUser(user)) {
-            System.out.println();
+            System.out.println("Successful logIn!");
+            mainMenu(user);
         }
         else {
             System.out.println("Login or password not correct");
@@ -122,8 +136,14 @@ public class UI {
     private static void post(User user) throws SQLException {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Enter the text:");
+        System.out.println("Enter the text(<140 symbols):");
         String content = scanner.nextLine();
+        if (content.length() > 140) {
+            System.out.println("C'mon, it's twitter(shitter). The text should be <= 140");
+            start();
+        }
+
+
         if (PostService.createPost(user.getId(), content)) {
             System.out.println("You successfully shitted!");
         } else {

@@ -1,10 +1,8 @@
 import java.sql.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+
 
 public class Database {
-    private static final String JDBC_URL = "jdbc:postgresql://localhost:5432/AlashLibrary";
+    private static final String JDBC_URL = "jdbc:postgresql://localhost:5432/Twitter";
     private static final String USERNAME = "postgres";
     private static final String PASSWORD = "Na260206";
 
@@ -15,6 +13,7 @@ public class Database {
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, user.getLogin());
             preparedStatement.setString(2, user.getPassword());
+            System.out.println(user.getPassword());
 
             ResultSet resultSet = preparedStatement.executeQuery();
             connection.close();
@@ -42,7 +41,7 @@ public class Database {
     }
 
     public static boolean createPost(int authorId, String content) throws SQLException {
-        String sql = "INSERT INTO posts (authorId, content, timestamp) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO posts (authorid, content, createdAt) VALUES (?, ?, ?)";
         Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, authorId);
@@ -52,6 +51,23 @@ public class Database {
             connection.close();
             }
         return true;
+    }
+
+
+    public static Integer getUserIdByLogin(String login) throws SQLException {
+        String sql = "SELECT id FROM users WHERE login = ?";
+        try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setString(1, login);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                return resultSet.getInt("id");
+            } else {
+                return null;
+            }
+        }
     }
 
     public static boolean editPost(String text) throws SQLException {
@@ -135,20 +151,5 @@ public class Database {
             }
         }
         return false; // Login is not taken, so return false
-    }
-
-    private static boolean isIsbnTaken(String isbn) throws SQLException {
-        String query = "SELECT COUNT(*) FROM books WHERE isbn = ?";
-        try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setString(1, isbn);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    int count = resultSet.getInt(1);
-                    return count > 0; // isbn taken if count > 0
-                }
-            }
-        }
-        return false; // isbn is not taken, so return false
     }
 }
