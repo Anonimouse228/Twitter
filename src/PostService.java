@@ -1,4 +1,5 @@
 import java.sql.SQLException;
+import java.util.List;
 
 public class PostService {
     public static boolean createPost(int authorId, String content) throws SQLException {
@@ -18,8 +19,8 @@ public class PostService {
     public static void getPosts(int n) {
 
     }
-    public static void getUsersPosts() {
-
+    public static List<Post> getUserPosts(int id, int page) throws SQLException {
+        return Database.getUserPosts(id, page);
     }
     public static boolean likePost(int id) throws SQLException {
         Database.like(id);

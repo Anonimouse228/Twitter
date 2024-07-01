@@ -16,4 +16,12 @@ public class Post {
         this.numberOfLikes = numberOfLikes;
     }
 
+
+    public void show() {
+        System.out.println("----------------------------------------");
+        System.out.println("@" + authorId    + ": " + content);
+        System.out.println("[" + timestamp + "] Likes: " + numberOfLikes);
+        System.out.println("----------------------------------------");
+    }
+
 }

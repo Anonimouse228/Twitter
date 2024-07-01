@@ -1,10 +1,6 @@
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
-import java.util.Date;
 
 public class UserService {
     public static boolean registerUser(User user) throws SQLException {
@@ -31,7 +27,12 @@ public class UserService {
 
     private static final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
     public static String hashPassword(String password) {
+        System.out.println(password + "iworked");
         return encoder.encode(password);
+    }
+
+    public static boolean matches(String rawPassword, String encodedPassword) {
+        return encoder.matches(rawPassword, encodedPassword);
     }
 
 

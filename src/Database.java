@@ -1,4 +1,7 @@
 import java.sql.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class Database {
@@ -8,18 +11,22 @@ public class Database {
 
 
     public static boolean logIn(User user) throws SQLException {
-        String sql = "SELECT * FROM users WHERE login = ? AND password = ?";
+        String sql = "SELECT * FROM users WHERE login = ?";
         Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, user.getLogin());
-            preparedStatement.setString(2, user.getPassword());
-            System.out.println(user.getPassword());
-
             ResultSet resultSet = preparedStatement.executeQuery();
+            if (!resultSet.next()) {
+                return false;
+            }
+            String hashedPassword = resultSet.getString("password");
+
+            boolean isAuthenticated = UserService.matches(user.getPassword(), hashedPassword);
             connection.close();
-            return resultSet.next();
+            return isAuthenticated;
         }
     }
+
     public static boolean register(User user) throws SQLException {
         String sql = "INSERT INTO users (login, password, isAdmin, createdAt) VALUES (?, ?, ?, ?)";
         Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
@@ -84,7 +91,7 @@ public class Database {
 
 
     public static boolean like(int id) throws SQLException {
-        String sql = "UPDATE posts SET rating = likes + 1 WHERE id = ?";
+        String sql = "UPDATE posts SET numberofLikes = numberofLikes + 1 WHERE id = ?";
         try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, id);
@@ -96,7 +103,7 @@ public class Database {
 
     public static boolean dislike(int id) throws SQLException {
         // SQL to increment the likes for a given post id
-        String sql = "UPDATE posts SET rating = likes - 1 WHERE id = ?";
+        String sql = "UPDATE posts SET numberofLikes = numberofLikes - 1 WHERE id = ?";
         try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, id);
@@ -106,6 +113,53 @@ public class Database {
 
         }
     }
+
+
+    private static final int POSTS_PER_PAGE = 10;
+    public static List<Post> getUserPosts(int userId, int pageNumber) throws SQLException {
+        Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
+        int offset = (pageNumber - 1) * POSTS_PER_PAGE;
+        String sql = "SELECT * FROM posts WHERE authorid = ? LIMIT ? OFFSET ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, userId);
+            preparedStatement.setInt(2, POSTS_PER_PAGE);
+            preparedStatement.setInt(3, offset);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            List<Post> posts = new ArrayList<>();
+            while (resultSet.next()) {
+
+                int postId = resultSet.getInt("id");
+                int authorID = resultSet.getInt("authorID");
+                LocalDateTime createdat = resultSet.getTimestamp("createdat").toLocalDateTime();
+                String content = resultSet.getString("content");
+                int numberofLikes = resultSet.getInt("numberofLikes");
+                Post post = new Post(postId, authorID, content, numberofLikes, createdat);
+                posts.add(post);
+            }
+            connection.close();
+            return posts;
+        }
+    }
+
+    public static int getNumberOfUserPosts(int userId) throws SQLException {
+        Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
+
+        String sql = "SELECT COUNT(*) AS post_count FROM users LEFT JOIN posts ON users.id = posts.authorid WHERE users.id = ?;";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, userId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) { // Check if there's a row
+                int numberOfPosts = resultSet.getInt("post_count");
+                return numberOfPosts;
+            } else {
+                return 0; // No rows indicate no posts
+            }
+        }
+    }
+
+
 
 //    public static List<Post> getBooks() throws SQLException {
 //        List<Post> books = new ArrayList<>();
@@ -139,17 +193,21 @@ public class Database {
 
 
     private static boolean isLoginTaken(String login) throws SQLException {
-        String query = "SELECT COUNT(*) FROM users WHERE login = ?";
-        try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setString(1, login);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    int count = resultSet.getInt(1);
-                    return count > 0; // User exists if count > 0
+            String query = "SELECT COUNT(*) FROM users WHERE login = ?";
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
+                 PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setString(1, login);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        int count = resultSet.getInt(1);
+                        return count > 0; // User exists if count > 0
+                    }
                 }
             }
-        }
-        return false; // Login is not taken, so return false
+            return false; // Login is not taken, so return false
     }
+
+
+
+
 }

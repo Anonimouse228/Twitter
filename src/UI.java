@@ -1,8 +1,6 @@
 import java.sql.SQLException;
-import java.util.Date;
+import java.util.List;
 import java.util.Scanner;
-
-import static java.awt.SystemColor.text;
 
 public class UI {
     private int userId;
@@ -40,7 +38,7 @@ public class UI {
             System.out.println("Length of password should be <= 20 and >= 4!");
             start();
         }
-        User user = new User(login, password, false);
+        User user = new User(login, UserService.hashPassword(password), false);
         if(!UserService.registerUser(user)) {
             System.out.println("Something went wrong! Please repeat");
             start();
@@ -56,8 +54,8 @@ public class UI {
         String login = scanner.nextLine();
         System.out.println("Enter your password:");
         String password = scanner.nextLine();
-        User user = new User(login, UserService.hashPassword(password), false);
-        System.out.println(user.getPassword());
+        User user = new User(login, password, false);
+
         if(UserService.loginUser(user)) {
             System.out.println("Successful logIn!");
             mainMenu(user);
@@ -73,12 +71,13 @@ public class UI {
         System.out.println("""
 
                 1. Take a shit(post)
-                2. Like a shit(post)
-                3. Dislike a shit(post)
-                4. Show last N shits
-                5. Your profile
-                6. Log out
-                7. Exit""");
+                2. Like a shit
+                3. Dislike a shit
+                4. Edit your shit
+                5. Show last N shits
+                6. Your profile
+                7. Log out
+                8. Exit""");
         Scanner scanner = new Scanner(System.in);
         String choice = scanner.nextLine();
 
@@ -93,15 +92,18 @@ public class UI {
                 dislike(user);
                 break;
             case "4":
-                showPosts();
+                getUserPosts(user);
                 break;
             case "5":
-                showProfile(user);
+                editPost(user);
                 break;
             case "6":
-
+                showProfile(user);
                 break;
             case "7":
+
+                break;
+            case "8":
 
                 break;
         }
@@ -172,10 +174,9 @@ public class UI {
         System.out.println("Enter the id of the post that you'd like to like:");
         int id = scanner.nextInt();
         if (!PostService.likePost(id)) {
-            System.out.println("Something went wrong. Please repeat");
-            like(user);
-        } else{
             System.out.println("You successfully liked a post!");
+        } else {
+            System.out.println("Something went wrong. Please repeat");
         }
         mainMenu(user);
     }
@@ -184,17 +185,34 @@ public class UI {
         System.out.println("Enter the id of the post that you'd like to dislike:");
         int id = scanner.nextInt();
         if (!PostService.dislikePost(id)) {
-            System.out.println("Something went wrong. Please repeat");
-            dislike(user);
-        } else{
             System.out.println("You successfully liked a post!");
+        } else {
+            System.out.println("Something went wrong. Please repeat");
         }
         mainMenu(user);
     }
 
-    private static void showPosts() {
-
+    private static void getUserPosts(User user) throws SQLException {
+        Scanner scanner = new Scanner(System.in);
+        int NumberOfPages = (Database.getNumberOfUserPosts(user.getId()) / 10) + 1;
+        System.out.println("There are " + NumberOfPages + " pages. Which page to show?");
+        int page;
+        boolean validInput = false;
+        do {
+            page = scanner.nextInt();
+            if (page < 1 || page > NumberOfPages) {
+                System.out.println("Invalid input. Try again");
+            } else {
+                validInput = true;
+            }
+        } while (!validInput);  // Loop continues until valid page number is entered
+        System.out.println(user.getLogin() + "'s posts:\n");
+        List<Post> posts = PostService.getUserPosts(user.getId(), page);
+        for(Post post: posts) {
+            post.show();
+        }
     }
+
 
     private static void showProfile(User user) {
 
