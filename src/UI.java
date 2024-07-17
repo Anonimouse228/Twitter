@@ -92,10 +92,10 @@ public class UI {
                 dislike(user);
                 break;
             case "4":
-                getUserPosts(user);
+                editPost(user);
                 break;
             case "5":
-                editPost(user);
+                getUserPosts(user);
                 break;
             case "6":
                 showProfile(user);
@@ -145,7 +145,6 @@ public class UI {
             start();
         }
 
-
         if (PostService.createPost(user.getId(), content)) {
             System.out.println("You successfully shitted!");
         } else {
@@ -158,14 +157,43 @@ public class UI {
     private static void editPost(User user) throws SQLException {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Enter the text:");
-        String content = scanner.nextLine();
-        if (PostService.editPost(content)) {
-            System.out.println("Shit succesfully edited!");
-        } else {
-            System.out.println("Something went wrong! Please repeat");
-            post(user);
+        List<Post> userPosts = PostService.getAllUserPosts(user.getId()); // Fetch all posts at once
+
+        while (true) {
+            System.out.println("\nHere are your posts (enter 'q' to quit):");
+            displayPosts(userPosts);
+
+            System.out.println("\nEnter the post ID to edit (or 'q' to quit):");
+            String input = scanner.nextLine().trim();
+
+            if (input.equalsIgnoreCase("q")) {
+                break;
+            }
+            int postId;
+            try {
+                postId = Integer.parseInt(input);
+                if (!isValidPostId(postId, userPosts)) {
+                    System.out.println("Invalid post ID. Please try again.");
+                    continue;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a number or 'q' to quit.");
+                continue;
+            }
+            System.out.println("Enter the new text (<= 140 characters):");
+            String content = scanner.nextLine().trim();
+            if (content.length() > 140) {
+                System.out.println("C'mon, it's Twitter. Keep it under 140 characters.");
+                continue;
+            }
+            if (PostService.editPost(content, postId)) {
+                System.out.println("Post successfully edited!");
+                break;
+            } else {
+                System.out.println("Something went wrong! Please try again.");
+            }
         }
+
         mainMenu(user);
     }
 
@@ -202,7 +230,9 @@ public class UI {
     private static void getUserPosts(User user) throws SQLException {
         Scanner scanner = new Scanner(System.in);
         int NumberOfPages = (Database.getNumberOfUserPosts(user.getId()) / 10) + 1;
-        System.out.println("There are " + NumberOfPages + " pages. Which page to show?");
+        System.out.println("Here's your posts.\nThere are " + NumberOfPages + " pages. Which page to show?" +
+                "\nType \"e\"+\"id\" to select a post and \"p\"+\"id\" to select a page");
+
         int page;
         boolean validInput = false;
         do {
@@ -219,6 +249,19 @@ public class UI {
             post.show();
         }
     }
+
+
+
+    private static boolean isValidPostId(int postId, List<Post> userPosts) {
+        return userPosts.stream().anyMatch(post -> post.getId() == postId);
+    }
+
+    private static void displayPosts(List<Post> posts) {
+        for (Post post : posts) {
+            post.show();
+        }
+    }
+
 
 
     private static void showProfile(User user) {

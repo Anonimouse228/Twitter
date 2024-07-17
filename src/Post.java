@@ -21,7 +21,11 @@ public class Post {
         System.out.println("----------------------------------------");
         System.out.println("@" + authorId    + ": " + content);
         System.out.println("[" + timestamp + "] Likes: " + numberOfLikes);
+        System.out.println("post id:" + id);
         System.out.println("----------------------------------------");
     }
 
+    public int getId() {
+        return id;
+    }
 }

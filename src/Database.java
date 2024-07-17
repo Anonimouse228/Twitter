@@ -5,6 +5,7 @@ import java.util.List;
 
 
 public class Database {
+    private static final int POSTS_PER_PAGE = 10;
     private static final String JDBC_URL = "jdbc:postgresql://localhost:5432/Twitter";
     private static final String USERNAME = "postgres";
     private static final String PASSWORD = "Na260206";
@@ -77,11 +78,13 @@ public class Database {
         }
     }
 
-    public static boolean editPost(String text) throws SQLException {
-        String sql = "UPDATE posts SET content = text";
+    public static boolean editPost(String text, int postId) throws SQLException {
+        String sql = "UPDATE posts SET content = ? WHERE id = ?";
         Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, text);
+            preparedStatement.setInt(2, postId);
+
             preparedStatement.executeUpdate();
             int affectedRows = preparedStatement.executeUpdate();
             connection.close();
@@ -114,8 +117,6 @@ public class Database {
         }
     }
 
-
-    private static final int POSTS_PER_PAGE = 10;
     public static List<Post> getUserPosts(int userId, int pageNumber) throws SQLException {
         Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
         int offset = (pageNumber - 1) * POSTS_PER_PAGE;
@@ -124,6 +125,30 @@ public class Database {
             preparedStatement.setInt(1, userId);
             preparedStatement.setInt(2, POSTS_PER_PAGE);
             preparedStatement.setInt(3, offset);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            List<Post> posts = new ArrayList<>();
+            while (resultSet.next()) {
+
+                int postId = resultSet.getInt("id");
+                int authorID = resultSet.getInt("authorID");
+                LocalDateTime createdat = resultSet.getTimestamp("createdat").toLocalDateTime();
+                String content = resultSet.getString("content");
+                int numberofLikes = resultSet.getInt("numberofLikes");
+                Post post = new Post(postId, authorID, content, numberofLikes, createdat);
+                posts.add(post);
+            }
+            connection.close();
+            return posts;
+        }
+    }
+
+
+    public static List<Post> getAllUserPosts(int userId) throws SQLException {
+        Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
+        String sql = "SELECT * FROM posts WHERE authorid = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, userId);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             List<Post> posts = new ArrayList<>();

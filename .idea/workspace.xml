@@ -4,9 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7a29d373-5ae1-4247-8cef-8a63ca4c70aa" name="Changes" comment="заработало постить лайкать и логин">
+    <list default="true" id="7a29d373-5ae1-4247-8cef-8a63ca4c70aa" name="Changes" comment="юзер не может самолайкать">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Database.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Database.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Post.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Post.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/PostService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/PostService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/UI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/UI.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -90,7 +92,7 @@
       <workItem from="1718533535388" duration="6714000" />
       <workItem from="1719824882200" duration="14299000" />
       <workItem from="1721196256785" duration="427000" />
-      <workItem from="1721198010662" duration="2905000" />
+      <workItem from="1721198010662" duration="7544000" />
     </task>
     <task id="LOCAL-00001" summary="privet">
       <option name="closed" value="true" />
@@ -148,7 +150,15 @@
       <option name="project" value="LOCAL" />
       <updated>1719842126206</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="юзер не может самолайкать">
+      <option name="closed" value="true" />
+      <created>1721201341021</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1721201341021</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -198,7 +208,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="privet" />
     <MESSAGE value="заработало постить лайкать и логин" />
-    <option name="LAST_COMMIT_MESSAGE" value="заработало постить лайкать и логин" />
+    <MESSAGE value="юзер не может самолайкать" />
+    <option name="LAST_COMMIT_MESSAGE" value="юзер не может самолайкать" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

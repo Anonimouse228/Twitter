@@ -6,8 +6,8 @@ public class PostService {
 
         return Database.createPost(authorId, content);
     }
-    public static boolean editPost(String content) throws SQLException {
-        return Database.editPost(content);
+    public static boolean editPost(String content, int postId) throws SQLException {
+        return Database.editPost(content, postId);
 
     }
     public static void deletePost() {
@@ -21,6 +21,9 @@ public class PostService {
     }
     public static List<Post> getUserPosts(int id, int page) throws SQLException {
         return Database.getUserPosts(id, page);
+    }
+    public static List<Post> getAllUserPosts(int id) throws SQLException {
+        return Database.getAllUserPosts(id);
     }
     public static boolean likePost(int id) throws SQLException {
         Database.like(id);
