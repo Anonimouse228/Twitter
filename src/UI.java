@@ -173,6 +173,10 @@ public class UI {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter the id of the post that you'd like to like:");
         int id = scanner.nextInt();
+        if (Database.isPostAuthor(id, user.getId())) {
+            System.out.println("You can't like your own post!");
+            mainMenu(user);
+        }
         if (!PostService.likePost(id)) {
             System.out.println("You successfully liked a post!");
         } else {
@@ -184,6 +188,9 @@ public class UI {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter the id of the post that you'd like to dislike:");
         int id = scanner.nextInt();
+        //if (Database.isPostAuthor(id, user.getId())) {
+        //    System.out.println("You can't dislike your own post!");
+        //}
         if (!PostService.dislikePost(id)) {
             System.out.println("You successfully liked a post!");
         } else {

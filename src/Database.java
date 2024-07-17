@@ -160,6 +160,24 @@ public class Database {
     }
 
 
+    public static boolean isPostAuthor(int postId, int userId) throws SQLException {
+        Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
+
+        String sql = "SELECT authorid FROM posts WHERE id = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, postId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                int authorId = resultSet.getInt("authorid");
+                return authorId == userId;
+            } else {
+                throw new SQLException("Post not found");
+            }
+        }
+    }
+
+
 
 //    public static List<Post> getBooks() throws SQLException {
 //        List<Post> books = new ArrayList<>();
