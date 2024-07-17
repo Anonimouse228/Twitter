@@ -1,3 +1,4 @@
+import javax.swing.event.ListDataEvent;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
@@ -31,6 +32,7 @@ public class UI {
             System.out.println("Length of login should be <= 20!");
             start();
         }
+
 
         System.out.println("Enter your password(no more than 20 symbols):");
         String password = scanner.nextLine();
@@ -95,7 +97,7 @@ public class UI {
                 editPost(user);
                 break;
             case "5":
-                getUserPosts(user);
+
                 break;
             case "6":
                 showProfile(user);
@@ -107,28 +109,6 @@ public class UI {
 
                 break;
         }
-    }
-
-    private static void profileMenu() {
-        System.out.println("""
-
-                1.
-                2.\s
-                3.\s""");
-    }
-
-    private static void postMenu() {
-        System.out.println("\n" +
-                "1. " +
-                "2. " +
-                "3. ");
-    }
-
-    private static void postsProfile() {
-        System.out.println("\n" +
-                "1. " +
-                "2. " +
-                "3. ");
     }
 
     private static void adminMenu() {
@@ -161,7 +141,9 @@ public class UI {
 
         while (true) {
             System.out.println("\nHere are your posts (enter 'q' to quit):");
-            displayPosts(userPosts);
+            for (Post post : userPosts) {
+                post.show();
+            }
 
             System.out.println("\nEnter the post ID to edit (or 'q' to quit):");
             String input = scanner.nextLine().trim();
@@ -172,7 +154,7 @@ public class UI {
             int postId;
             try {
                 postId = Integer.parseInt(input);
-                if (!isValidPostId(postId, userPosts)) {
+                if (!userPosts.stream().anyMatch(post -> post.getId() == postId)) {
                     System.out.println("Invalid post ID. Please try again.");
                     continue;
                 }
@@ -227,42 +209,9 @@ public class UI {
         mainMenu(user);
     }
 
-    private static void getUserPosts(User user) throws SQLException {
-        Scanner scanner = new Scanner(System.in);
-        int NumberOfPages = (Database.getNumberOfUserPosts(user.getId()) / 10) + 1;
-        System.out.println("Here's your posts.\nThere are " + NumberOfPages + " pages. Which page to show?" +
-                "\nType \"e\"+\"id\" to select a post and \"p\"+\"id\" to select a page");
+    private static List<Post> showPosts() {
 
-        int page;
-        boolean validInput = false;
-        do {
-            page = scanner.nextInt();
-            if (page < 1 || page > NumberOfPages) {
-                System.out.println("Invalid input. Try again");
-            } else {
-                validInput = true;
-            }
-        } while (!validInput);  // Loop continues until valid page number is entered
-        System.out.println(user.getLogin() + "'s posts:\n");
-        List<Post> posts = PostService.getUserPosts(user.getId(), page);
-        for(Post post: posts) {
-            post.show();
-        }
     }
-
-
-
-    private static boolean isValidPostId(int postId, List<Post> userPosts) {
-        return userPosts.stream().anyMatch(post -> post.getId() == postId);
-    }
-
-    private static void displayPosts(List<Post> posts) {
-        for (Post post : posts) {
-            post.show();
-        }
-    }
-
-
 
     private static void showProfile(User user) {
 
