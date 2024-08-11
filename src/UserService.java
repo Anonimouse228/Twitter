@@ -27,7 +27,7 @@ public class UserService {
 
     private static final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
     public static String hashPassword(String password) {
-        System.out.println(password + "iworked");
+
         return encoder.encode(password);
     }
 

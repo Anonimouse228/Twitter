@@ -93,43 +93,104 @@ public class Database {
     }
 
 
-    public static boolean like(int id) throws SQLException {
-        String sql = "UPDATE posts SET numberofLikes = numberofLikes + 1 WHERE id = ?";
-        try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, id);
-            int affectedRows = preparedStatement.executeUpdate();
-            connection.close();
-            return affectedRows > 0;
+    public static boolean like(int postId, int userId) throws SQLException {
+        String checkLikeSql = "SELECT COUNT(*) FROM likes WHERE postid = ? AND userid = ?";
+        String updatePostSql = "UPDATE posts SET numberoflikes = numberoflikes + 1 WHERE id = ?";
+        String insertLikeSql = "INSERT INTO likes (postid, userid, isLike) VALUES (?, ?, ?)";
+
+        try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD)) {
+            connection.setAutoCommit(false);
+            try (PreparedStatement checkLikeStmt = connection.prepareStatement(checkLikeSql);
+                 PreparedStatement updatePostStmt = connection.prepareStatement(updatePostSql);
+                 PreparedStatement insertLikeStmt = connection.prepareStatement(insertLikeSql)) {
+
+                checkLikeStmt.setInt(1, postId);
+                checkLikeStmt.setInt(2, userId);
+                ResultSet resultSet = checkLikeStmt.executeQuery();
+                resultSet.next();
+                int count = resultSet.getInt(1);
+                if (count > 0) {
+                    return false;
+                }
+                updatePostStmt.setInt(1, postId);
+                int affectedRows = updatePostStmt.executeUpdate();
+                if (affectedRows > 0) {
+                    insertLikeStmt.setInt(1, postId);
+                    insertLikeStmt.setInt(2, userId);
+                    insertLikeStmt.setBoolean(3,true);
+                    insertLikeStmt.executeUpdate();
+                    connection.commit();
+                    return true;
+                } else {
+                    connection.rollback();
+                    return false;
+                }
+            } catch (SQLException e) {
+                connection.rollback();
+                throw e;
+            } finally {
+                connection.setAutoCommit(true);
+                connection.close();
+            }
         }
     }
 
-    public static boolean dislike(int id) throws SQLException {
-        // SQL to increment the likes for a given post id
-        String sql = "UPDATE posts SET numberofLikes = numberofLikes - 1 WHERE id = ?";
-        try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, id);
-            int affectedRows = preparedStatement.executeUpdate();
-            connection.close();
-            return affectedRows > 0;
 
+
+    public static boolean dislike(int postId, int userId) throws SQLException {
+        String checkLikeSql = "SELECT COUNT(*) FROM likes WHERE postid = ? AND userid = ?";
+        String updatePostSql = "UPDATE posts SET numberoflikes = numberoflikes - 1 WHERE id = ?";
+        String insertLikeSql = "INSERT INTO likes (postid, userid, isLike) VALUES (?, ?, ?)";
+
+        try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD)) {
+            connection.setAutoCommit(false);
+            try (PreparedStatement checkLikeStmt = connection.prepareStatement(checkLikeSql);
+                 PreparedStatement updatePostStmt = connection.prepareStatement(updatePostSql);
+                 PreparedStatement insertLikeStmt = connection.prepareStatement(insertLikeSql)) {
+
+                checkLikeStmt.setInt(1, postId);
+                checkLikeStmt.setInt(2, userId);
+                ResultSet resultSet = checkLikeStmt.executeQuery();
+                resultSet.next();
+                int count = resultSet.getInt(1);
+                if (count > 0) {
+                    return false;
+                }
+                updatePostStmt.setInt(1, postId);
+                int affectedRows = updatePostStmt.executeUpdate();
+                if (affectedRows > 0) {
+                    insertLikeStmt.setInt(1, postId);
+                    insertLikeStmt.setInt(2, userId);
+                    insertLikeStmt.setBoolean(3,false);
+                    insertLikeStmt.executeUpdate();
+                    connection.commit();
+                    return true;
+                } else {
+                    connection.rollback();
+                    return false;
+                }
+            } catch (SQLException e) {
+                connection.rollback();
+                throw e;
+            } finally {
+                connection.setAutoCommit(true);
+                connection.close();
+            }
         }
     }
 
-    public static List<Post> getUserPosts(int userId, int pageNumber) throws SQLException {
+
+
+    public static List<Post> getFeed(int page) throws SQLException {
         Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
-        int offset = (pageNumber - 1) * POSTS_PER_PAGE;
-        String sql = "SELECT * FROM posts WHERE authorid = ? LIMIT ? OFFSET ?";
+        String sql = "SELECT * FROM posts ORDER BY createdat LIMIT ? OFFSET ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, userId);
-            preparedStatement.setInt(2, POSTS_PER_PAGE);
-            preparedStatement.setInt(3, offset);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
+            preparedStatement.setInt(1, 5);
+            preparedStatement.setInt(2, (page-1)*5);//if page is 1 then offset is 0. If 2 then 5
+             ResultSet resultSet = preparedStatement.executeQuery();
             List<Post> posts = new ArrayList<>();
-            while (resultSet.next()) {
 
+            while(resultSet.next()) {
                 int postId = resultSet.getInt("id");
                 int authorID = resultSet.getInt("authorID");
                 LocalDateTime createdat = resultSet.getTimestamp("createdat").toLocalDateTime();
@@ -140,20 +201,36 @@ public class Database {
             }
             connection.close();
             return posts;
+
         }
     }
 
-
-    public static List<Post> getAllUserPosts(int userId) throws SQLException {
+    public static int getAmountOfPosts() throws SQLException {
         Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
-        String sql = "SELECT * FROM posts WHERE authorid = ?";
+        String sql = "SELECT COUNT(id) FROM posts;";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, userId);
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            List<Post> posts = new ArrayList<>();
-            while (resultSet.next()) {
+            if (resultSet.next()) {
+                int numberOfPosts = resultSet.getInt("count");
+                return numberOfPosts;
+            } else {
+                return 0;
+            }
+        }
+    }
 
+    public static List<Post> getUserPosts(int userId, int page) throws SQLException {
+        Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
+        String sql = "SELECT * FROM posts WHERE userid = ? ORDER BY createdat LIMIT ? OFFSET ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, userId);
+            preparedStatement.setInt(2, 5);
+            preparedStatement.setInt(3, (page-1)*5);//if page is 1 then offset is 0. If 2 then 5
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<Post> posts = new ArrayList<>();
+
+            while(resultSet.next()) {
                 int postId = resultSet.getInt("id");
                 int authorID = resultSet.getInt("authorID");
                 LocalDateTime createdat = resultSet.getTimestamp("createdat").toLocalDateTime();
@@ -164,25 +241,26 @@ public class Database {
             }
             connection.close();
             return posts;
+
         }
     }
 
-    public static int getNumberOfUserPosts(int userId) throws SQLException {
+    public static int getAmountOfUserPosts(int userId) throws SQLException {
         Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
-
         String sql = "SELECT COUNT(*) AS post_count FROM users LEFT JOIN posts ON users.id = posts.authorid WHERE users.id = ?;";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, userId);
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            if (resultSet.next()) { // Check if there's a row
-                int numberOfPosts = resultSet.getInt("post_count");
+            if (resultSet.next()) {
+                int numberOfPosts = resultSet.getInt("count");
                 return numberOfPosts;
             } else {
-                return 0; // No rows indicate no posts
+                return 0;
             }
         }
     }
+
 
 
     public static boolean isPostAuthor(int postId, int userId) throws SQLException {
@@ -197,38 +275,10 @@ public class Database {
                 int authorId = resultSet.getInt("authorid");
                 return authorId == userId;
             } else {
-                throw new SQLException("Post not found");
+                return false;
             }
         }
     }
-
-
-
-//    public static List<Post> getBooks() throws SQLException {
-//        List<Post> books = new ArrayList<>();
-//        String sql = "SELECT * FROM books";
-//        try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
-//             PreparedStatement pstmt = connection.prepareStatement(sql)) {
-//            ResultSet rs = pstmt.executeQuery();
-//            while (rs.next()) {
-//                Post post = new Post(
-//                        rs.getInt("id"),
-//                        rs.getString("name"),
-//                        rs.getString("author"),
-//                        rs.getString("genre"),
-//                        rs.getString("isbn"),
-//                        rs.getString("language")
-//                );
-//                books.add(post);
-//            }
-//        } catch (SQLException e) {
-//            System.err.println(e.getMessage());
-//        }
-//        return books;
-//    }
-
-
-
 
 
 

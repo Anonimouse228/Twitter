@@ -4,9 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7a29d373-5ae1-4247-8cef-8a63ca4c70aa" name="Changes" comment="edit works">
+    <list default="true" id="7a29d373-5ae1-4247-8cef-8a63ca4c70aa" name="Changes" comment="ed">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/828d8594-0835-49d7-a5d2-deb24b560c56.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/828d8594-0835-49d7-a5d2-deb24b560c56.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/828d8594-0835-49d7-a5d2-deb24b560c56/storage_v2/_src_/database/Twitter.U0KaLA/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/828d8594-0835-49d7-a5d2-deb24b560c56/storage_v2/_src_/database/Twitter.U0KaLA/schema/public.abK9xQ.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Twitter.iml" beforeDir="false" afterPath="$PROJECT_DIR$/Twitter.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Database.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Database.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/PostService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/PostService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/UI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/UI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/UserService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,7 +49,7 @@
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/Mediafiles/Downloads/commons-logging-1.3.2.jar&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Али/IdeaProjects/Twitter/spring-security-crypto-6.3.1.jar&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -89,7 +95,9 @@
       <workItem from="1718533535388" duration="6714000" />
       <workItem from="1719824882200" duration="14299000" />
       <workItem from="1721196256785" duration="427000" />
-      <workItem from="1721198010662" duration="9909000" />
+      <workItem from="1721198010662" duration="9944000" />
+      <workItem from="1723355344645" duration="451000" />
+      <workItem from="1723355805540" duration="11229000" />
     </task>
     <task id="LOCAL-00001" summary="privet">
       <option name="closed" value="true" />
@@ -163,7 +171,15 @@
       <option name="project" value="LOCAL" />
       <updated>1721211635843</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="ed">
+      <option name="closed" value="true" />
+      <created>1721217109454</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1721217109454</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -215,7 +231,8 @@
     <MESSAGE value="заработало постить лайкать и логин" />
     <MESSAGE value="юзер не может самолайкать" />
     <MESSAGE value="edit works" />
-    <option name="LAST_COMMIT_MESSAGE" value="edit works" />
+    <MESSAGE value="ed" />
+    <option name="LAST_COMMIT_MESSAGE" value="ed" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

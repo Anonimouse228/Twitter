@@ -22,16 +22,13 @@ public class PostService {
     public static List<Post> getUserPosts(int id, int page) throws SQLException {
         return Database.getUserPosts(id, page);
     }
-    public static List<Post> getAllUserPosts(int id) throws SQLException {
-        return Database.getAllUserPosts(id);
+    public static List<Post> getFeed(int page) throws SQLException {
+        return Database.getFeed(page);
     }
-    public static boolean likePost(int id) throws SQLException {
-        Database.like(id);
-        return false;
+    public static boolean likePost(int postid, int userid) throws SQLException {
+        return Database.like(postid, userid);
     }
-    public static boolean dislikePost(int id) throws SQLException {
-        Database.dislike(id);
-        return false;
+    public static boolean dislikePost(int postid, int userid) throws SQLException {
+        return Database.dislike(postid, userid);
     }
-
 }
