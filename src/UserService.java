@@ -19,9 +19,12 @@ public class UserService {
     public static void getAllUsers() {
 
     }
+    public static boolean changeAboutMe(User user, String text) throws SQLException {
+        return Database.changeAboutMe(user.getId(), text);
+    }
 
-    public static void showProfile(User user) {
-        System.out.println(user.toString());
+    public static void showProfile(int id) {
+
     }
 
 
@@ -35,5 +38,8 @@ public class UserService {
         return encoder.matches(rawPassword, encodedPassword);
     }
 
+    public static User getUserData(User user) throws SQLException {
+        return Database.getUserData(user.getId());
+    }
 
 }

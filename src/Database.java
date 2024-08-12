@@ -48,13 +48,14 @@ public class Database {
         return true;
     }
 
-    public static boolean createPost(int authorId, String content) throws SQLException {
-        String sql = "INSERT INTO posts (authorid, content, createdAt) VALUES (?, ?, ?)";
+    public static boolean createPost(int authorId, String login, String content) throws SQLException {
+        String sql = "INSERT INTO posts (authorid, authorlogin, content, createdAt) VALUES (?, ?, ?, ?)";
         Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, authorId);
-            preparedStatement.setString(2, content);
-            preparedStatement.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
+            preparedStatement.setString(2, login);
+            preparedStatement.setString(3, content);
+            preparedStatement.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
             preparedStatement.executeUpdate();
             connection.close();
             }
@@ -77,6 +78,28 @@ public class Database {
             }
         }
     }
+
+    public static User getUserData(int id) throws SQLException {
+        String sql = "SELECT * FROM users WHERE id = ?";
+        try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                String login = resultSet.getString("login");
+                String password = resultSet.getString("password");
+                boolean isAdmin = resultSet.getBoolean("isadmin");
+                String aboutMe = resultSet.getString("aboutme");
+                LocalDateTime createdAt = resultSet.getTimestamp("createdat").toLocalDateTime();
+
+                return new User(login, password, isAdmin, aboutMe, createdAt);
+            } else {
+                return null;
+            }
+        }
+    }
+
 
     public static boolean editPost(String text, int postId) throws SQLException {
         String sql = "UPDATE posts SET content = ? WHERE id = ?";
@@ -193,10 +216,12 @@ public class Database {
             while(resultSet.next()) {
                 int postId = resultSet.getInt("id");
                 int authorID = resultSet.getInt("authorID");
+                String authorLogin = resultSet.getString("authorlogin");
                 LocalDateTime createdat = resultSet.getTimestamp("createdat").toLocalDateTime();
                 String content = resultSet.getString("content");
                 int numberofLikes = resultSet.getInt("numberofLikes");
-                Post post = new Post(postId, authorID, content, numberofLikes, createdat);
+
+                Post post = new Post(postId, authorID, authorLogin, content, numberofLikes, createdat);
                 posts.add(post);
             }
             connection.close();
@@ -222,7 +247,7 @@ public class Database {
 
     public static List<Post> getUserPosts(int userId, int page) throws SQLException {
         Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
-        String sql = "SELECT * FROM posts WHERE userid = ? ORDER BY createdat LIMIT ? OFFSET ?";
+        String sql = "SELECT * FROM posts WHERE authorid = ? ORDER BY createdat LIMIT ? OFFSET ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, userId);
             preparedStatement.setInt(2, 5);
@@ -233,10 +258,11 @@ public class Database {
             while(resultSet.next()) {
                 int postId = resultSet.getInt("id");
                 int authorID = resultSet.getInt("authorID");
+                String authorLogin = resultSet.getString("authorlogin");
                 LocalDateTime createdat = resultSet.getTimestamp("createdat").toLocalDateTime();
                 String content = resultSet.getString("content");
                 int numberofLikes = resultSet.getInt("numberofLikes");
-                Post post = new Post(postId, authorID, content, numberofLikes, createdat);
+                Post post = new Post(postId, authorID, authorLogin, content, numberofLikes, createdat);
                 posts.add(post);
             }
             connection.close();
@@ -253,7 +279,7 @@ public class Database {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                int numberOfPosts = resultSet.getInt("count");
+                int numberOfPosts = resultSet.getInt("post_count");
                 return numberOfPosts;
             } else {
                 return 0;
@@ -301,6 +327,17 @@ public class Database {
     }
 
 
+    public static boolean changeAboutMe(int userId, String text) throws SQLException {
+        String sql = "UPDATE users SET aboutme = ? WHERE id = ?";
+        Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, text);
+            preparedStatement.setInt(2, userId);
 
-
+            preparedStatement.executeUpdate();
+            int affectedRows = preparedStatement.executeUpdate();
+            connection.close();
+            return affectedRows > 0;
+        }
+    }
 }

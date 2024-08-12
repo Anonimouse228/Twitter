@@ -40,7 +40,7 @@ public class UI {
             System.out.println("Length of password should be <= 20 and >= 4!");
             start();
         }
-        User user = new User(login, UserService.hashPassword(password), false);
+        User user = new User(login, UserService.hashPassword(password), false, null, null);
         if(!UserService.registerUser(user)) {
             System.out.println("Something went wrong! Please repeat");
             start();
@@ -56,7 +56,7 @@ public class UI {
         String login = scanner.nextLine();
         System.out.println("Enter your password:");
         String password = scanner.nextLine();
-        User user = new User(login, password, false);
+        User user = new User(login, password, false, null, null);
 
         if(UserService.loginUser(user)) {
             System.out.println("Successful logIn!");
@@ -70,14 +70,15 @@ public class UI {
 
     }
     private static void mainMenu(User user) throws SQLException {
+        user = UserService.getUserData(user);
         System.out.println("""
 
-                1. Show posts
+                1. Show shits(posts)
                 2. Take a shit(post)
-                3. 
-                4. Your profile
-                5. 
-                6. 
+                3. Your profile
+                4. 
+                5.
+                6.
                 7. Log out
                 8. Exit""");
         Scanner scanner = new Scanner(System.in);
@@ -91,10 +92,10 @@ public class UI {
                 post(user);
                 break;
             case "3":
-                editPost(user);
+                showYourProfile(user);
                 break;
             case "4":
-                showProfile(user);
+
                 break;
             case "5":
 
@@ -115,79 +116,104 @@ public class UI {
 
     }
 
+
 //    private static void showFeed(User user) throws SQLException {
 //        Scanner scanner = new Scanner(System.in);
 //        int amountOfPages = (Database.getAmountOfPosts() / 5) + 1;
 //        int page = 1;
 //        List<Post> posts = PostService.getFeed(page);
-//        while(true) {
+//
+//        while (true) {
+//            System.out.println("\n");
+//
 //            for (Post post : posts) {
 //                post.show();
 //            }
-//            System.out.println("Page " + page + "out of " + amountOfPages);
-//            System.out.println("\"l\" - like a post" +
-//                               "\"d\" - dislike a post" +
-//                               "\"(number)\" - go to page (number)" +
-//                               "\"q\" - quit to Main Menu");
-//            String choice = scanner.nextLine();
+//            System.out.println("\nPage " + page + " out of " + amountOfPages);
+//            System.out.println("\"l\" - like a post | " +
+//                    "\"d\" - dislike a post | " +
+//                    "\"(number)\" - go to page (number) | " +
+//                    "\"q\" - quit to Main Menu");
+//
+//            String choice = scanner.nextLine().trim();
+//
 //            if (Objects.equals(choice, "l")) {
 //                like(user);
 //            } else if (Objects.equals(choice, "d")) {
 //                dislike(user);
 //            } else if (Objects.equals(choice, "q")) {
 //                mainMenu(user);
-//            } else if (choice.chars().allMatch( Character::isDigit )) {
-//                posts = PostService.getFeed(Integer.parseInt(choice));
-//                continue;
+//                break;
+//            } else if (choice.chars().allMatch(Character::isDigit)) {
+//                int selectedPage = Integer.parseInt(choice);
+//
+//
+//                if (selectedPage > 0 && selectedPage <= amountOfPages) {
+//                    page = selectedPage;
+//                    posts = PostService.getFeed(page);
+//                } else {
+//                    System.out.println("Invalid page number, please try again.");
+//                }
 //            } else {
 //                System.out.println("Invalid Input, please repeat");
-//                showFeed(user);
 //            }
 //        }
+//        mainMenu(user);
 //    }
 
     private static void showFeed(User user) throws SQLException {
         Scanner scanner = new Scanner(System.in);
-        int amountOfPages = (Database.getAmountOfPosts() / 5) + 1;
-        int page = 1;
-        List<Post> posts = PostService.getFeed(page);
+        int postsPerPage = 5;
+        int totalPosts = Database.getAmountOfPosts();
+        int totalPages = (totalPosts + postsPerPage - 1) / postsPerPage; // Adjust calculation for integer division
+        int currentPage = 1;
 
         while (true) {
+            List<Post> posts = PostService.getFeed(currentPage);
+
 
             for (Post post : posts) {
                 post.show();
             }
-            System.out.println("\nPage " + page + " out of " + amountOfPages);
-            System.out.println("\"l\" - like a post | " +
-                    "\"d\" - dislike a post | " +
-                    "\"(number)\" - go to page (number) | " +
-                    "\"q\" - quit to Main Menu");
+
+            System.out.println("\nPage " + currentPage + " out of " + totalPages);
+            System.out.println("\"(number)\" - Go to page (number)");
+            System.out.printf("\"l\" - Like a post | ");
+            System.out.printf("\"d\" - Dislike a post | ");
+            System.out.printf("\"p (id)\" - See the author's profile by ID | ");
+            System.out.printf("\"q\" - Quit to Main Menu\n");
 
             String choice = scanner.nextLine().trim();
 
-            if (Objects.equals(choice, "l")) {
+            if (choice.equalsIgnoreCase("l")) {
                 like(user);
-            } else if (Objects.equals(choice, "d")) {
+            } else if (choice.equalsIgnoreCase("d")) {
                 dislike(user);
-            } else if (Objects.equals(choice, "q")) {
+            } else if (choice.equalsIgnoreCase("q")) {
                 mainMenu(user);
                 break;
+            } else if (choice.startsWith("p ")) {
+                try {
+                    int authorId = Integer.parseInt(choice.substring(2).trim());
+                    UserService.showProfile(authorId);
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid ID format. Please try again.");
+                }
             } else if (choice.chars().allMatch(Character::isDigit)) {
                 int selectedPage = Integer.parseInt(choice);
-
-
-                if (selectedPage > 0 && selectedPage <= amountOfPages) {
-                    page = selectedPage;
-                    posts = PostService.getFeed(page);
+                if (selectedPage > 0 && selectedPage <= totalPages) {
+                    currentPage = selectedPage;
                 } else {
-                    System.out.println("Invalid page number, please try again.");
+                    System.out.println("Invalid page number. Please try again.");
                 }
             } else {
-                System.out.println("Invalid Input, please repeat");
+                System.out.println("Invalid input. Please try again.");
             }
         }
         mainMenu(user);
     }
+
+
 
 
     private static void post(User user) throws SQLException {
@@ -196,11 +222,12 @@ public class UI {
         System.out.println("Enter the text(<140 symbols):");
         String content = scanner.nextLine();
         if (content.length() > 140) {
-            System.out.println("C'mon, it's twitter(shitter). The text should be <= 140");
+           System.out.println("C'mon, it's twitter(shitter). The text should be < 140. " +
+                "The length of yours was " + content.length());
             start();
         }
 
-        if (PostService.createPost(user.getId(), content)) {
+        if (PostService.createPost(user.getId(), user.getLogin(), content)) {
             System.out.println("You successfully shitted!");
         } else {
             System.out.println("Something went wrong! Please repeat");
@@ -209,7 +236,7 @@ public class UI {
         mainMenu(user);
     }
 
-    private static void editPost(User user) throws SQLException {
+    private static void myPosts(User user) throws SQLException {
         Scanner scanner = new Scanner(System.in);
         int amountOfPages = (Database.getAmountOfUserPosts(user.getId()) / 5) + 1;
         int page = 1;
@@ -233,15 +260,17 @@ public class UI {
                 System.out.println("Enter the text(<140 symbols):");
                 String content = scanner.nextLine();
                 if (content.length() > 140) {
-                    System.out.println("C'mon, it's twitter(shitter). The text should be <= 140");
-                    showProfile(user);
+                    System.out.println("C'mon, it's twitter(shitter). The text should be <= 140. " +
+                            "The length of yours was " + content.length());
+                    showYourProfile(user);
                 }
                 if (PostService.editPost(content, Integer.parseInt(id))) {
                     System.out.println("You successfully edited your shit!");
                 } else {
                     System.out.println("Something went wrong! Please repeat");
-                    showProfile(user);
+                    showYourProfile(user);
                 }
+                System.out.println("\n");
 
             } else if (Objects.equals(choice, "q")) {
                 mainMenu(user);
@@ -260,7 +289,7 @@ public class UI {
                 System.out.println("Invalid Input, please repeat");
             }
         }
-        showProfile(user);
+        showYourProfile(user);
     }
 
     private static void like(User user) throws SQLException {
@@ -275,6 +304,7 @@ public class UI {
             System.out.println("You successfully liked a post!");
         } else {
             System.out.println("Something went wrong(maybe you already liked it).");
+            showFeed(user);
         }
         mainMenu(user);
     }
@@ -294,14 +324,53 @@ public class UI {
         mainMenu(user);
     }
 
+    private static void changeAboutMe(User user) throws SQLException {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Your About Me is:" + user.getAboutMe());
+        System.out.println("Type the new About Me(<140):");
+        String text = scanner.nextLine();
+        if (text.length() > 140) {
+            System.out.println("The length of about me should not exceed 140. " +
+                    "The length of yours was " + text.length());
+        }
 
-    private static void showProfile(User user) {// в общем нужно сделать чтобы можно было видеть кого угодно профль вот таким образом
-        //показывает имя и всякое(может что то вроде about me)
-        //меню:
-        //1. Show my posts(потом в нём можно будет редактировать посты)
-        //2. Show my likes
-        //3. ???
-        //4. quit
+        if (UserService.changeAboutMe(user, text)) {
+            System.out.println("You succesfully changed your About Me!");
+            mainMenu(user);
+        } else {
+            System.out.println("Something went wrong! Please repeat");
+        }
+    }
+
+
+    private static void showYourProfile(User user) throws SQLException {// в общем нужно сделать чтобы можно было видеть кого угодно профль вот таким образом
+//        user = UserService.getUserData(user);
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("\n\n==================================\n" +
+                           "           My Profile             \n" +
+                           "==================================");
+        System.out.printf(" ID: %d | Login: %s%n", user.getId(), user.getLogin());
+        System.out.printf(" %-12s: %s%n", "About me", user.getAboutMe());
+        System.out.printf(" %-12s: %s%n", "Your account was created at", user.getCreatedAt());
+        //System.out.printf(" %-12s: %d%n", "Likes", numberOfLikes); TODO: видеть сколько лайков в общем у его постов
+
+        System.out.println("\"1\" - My posts | " +
+                           "\"2\" - My likes | " +
+                           "\"3\" - Change 'About Me' | " +
+                           "\"q\" - quit to Main Menu | ");
+        String choice = scanner.nextLine();
+        if (Objects.equals(choice, "1")) {
+            myPosts(user);
+        } else if (Objects.equals(choice, "2")) {
+            //myLikes(user);
+        } else if (Objects.equals(choice, "3")) {
+            changeAboutMe(user);
+        } else if (Objects.equals(choice, "q")) {
+            mainMenu(user);
+        }
+        else {
+            System.out.println("Invalid Input, please repeat");
+        }
 
 
     }

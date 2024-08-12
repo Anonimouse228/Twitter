@@ -2,9 +2,9 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class PostService {
-    public static boolean createPost(int authorId, String content) throws SQLException {
+    public static boolean createPost(int authorId, String login, String content) throws SQLException {
 
-        return Database.createPost(authorId, content);
+        return Database.createPost(authorId, login, content);
     }
     public static boolean editPost(String content, int postId) throws SQLException {
         return Database.editPost(content, postId);
