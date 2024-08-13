@@ -1,6 +1,7 @@
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public class UserService {
     public static boolean registerUser(User user) throws SQLException {
@@ -38,8 +39,13 @@ public class UserService {
         return encoder.matches(rawPassword, encodedPassword);
     }
 
-    public static User getUserData(User user) throws SQLException {
-        return Database.getUserData(user.getId());
+    public static User getUserData(int id) throws SQLException {
+        return Database.getUserData(id);
     }
+
+    public static List<LikedPost> getUserLikes(int userId, int page) throws SQLException {
+        return Database.getUserLikes(userId, page);
+    }
+
 
 }

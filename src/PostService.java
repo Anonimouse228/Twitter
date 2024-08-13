@@ -31,4 +31,8 @@ public class PostService {
     public static boolean dislikePost(int postid, int userid) throws SQLException {
         return Database.dislike(postid, userid);
     }
+
+    public static boolean hasExceededPostLimit(User user) throws SQLException {
+        return Database.hasExceededPostLimit(user.getId());
+    }
 }

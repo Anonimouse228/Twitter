@@ -206,7 +206,7 @@ public class Database {
 
     public static List<Post> getFeed(int page) throws SQLException {
         Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
-        String sql = "SELECT * FROM posts ORDER BY createdat LIMIT ? OFFSET ?";
+        String sql = "SELECT * FROM posts ORDER BY createdat DESC LIMIT ? OFFSET ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, 5);
             preparedStatement.setInt(2, (page-1)*5);//if page is 1 then offset is 0. If 2 then 5
@@ -247,11 +247,10 @@ public class Database {
 
     public static List<Post> getUserPosts(int userId, int page) throws SQLException {
         Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
-        String sql = "SELECT * FROM posts WHERE authorid = ? ORDER BY createdat LIMIT ? OFFSET ?";
+        String sql = "SELECT * FROM posts WHERE authorid = ? ORDER BY createdat LIMIT 5 OFFSET ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, userId);
-            preparedStatement.setInt(2, 5);
-            preparedStatement.setInt(3, (page-1)*5);//if page is 1 then offset is 0. If 2 then 5
+            preparedStatement.setInt(2, (page-1)*5);//if page is 1 then offset is 0. If 2 then 5
             ResultSet resultSet = preparedStatement.executeQuery();
             List<Post> posts = new ArrayList<>();
 
@@ -264,6 +263,34 @@ public class Database {
                 int numberofLikes = resultSet.getInt("numberofLikes");
                 Post post = new Post(postId, authorID, authorLogin, content, numberofLikes, createdat);
                 posts.add(post);
+            }
+            connection.close();
+            return posts;
+
+        }
+    }
+
+    public static List<LikedPost> getUserLikes(int userId, int page) throws SQLException {
+        Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
+        String sql = "SELECT posts.*, likes.createdat AS likecreatedat, likes.islike FROM posts JOIN likes ON posts.id = likes.postid " +
+                "WHERE likes.userid = ? ORDER BY likes.createdat LIMIT 5 OFFSET ?;";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, userId);
+            preparedStatement.setInt(2, (page-1)*5);//if page is 1 then offset is 0. If 2 then 5
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<LikedPost> posts = new ArrayList<>();
+
+            while(resultSet.next()) {
+                int postId = resultSet.getInt("id");
+                int authorID = resultSet.getInt("authorID");
+                String authorLogin = resultSet.getString("authorlogin");
+                LocalDateTime createdat = resultSet.getTimestamp("createdat").toLocalDateTime();
+                String content = resultSet.getString("content");
+                int numberofLikes = resultSet.getInt("numberofLikes");
+                LocalDateTime likesCreatedAt = resultSet.getTimestamp("likecreatedat").toLocalDateTime();
+                boolean isLike = resultSet.getBoolean("islike");
+                LikedPost likedPost = new LikedPost(postId, authorID, authorLogin, content, numberofLikes, createdat, likesCreatedAt, isLike);
+                posts.add(likedPost);
             }
             connection.close();
             return posts;
@@ -340,4 +367,23 @@ public class Database {
             return affectedRows > 0;
         }
     }
+
+    public static boolean hasExceededPostLimit(int userId) {
+        String query = "SELECT COUNT(*) FROM posts WHERE authorid = ? AND createdat >= NOW() - INTERVAL '1 hour'";
+        try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, userId);
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                if (rs.next()) {
+                    int postCount = rs.getInt(1);
+                    return postCount <= 20;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
 }

@@ -42,7 +42,7 @@ public class User {
         System.out.printf(" %-12s: %s%n", "Login", login);
         System.out.printf(" %-12s: %d%n", "User ID", id);
         System.out.printf(" %-12s: %s%n", "About Me", aboutMe);
-        System.out.printf(" %-12s: %s%n", "Joined", createdAt);
+        System.out.printf(" %-12s: %s | %s%n", "Joined", Time.timeFormatter(createdAt), Time.timeAgo(createdAt));
         System.out.println("========================================");
     }
 }
