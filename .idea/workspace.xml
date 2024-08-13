@@ -4,18 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7a29d373-5ae1-4247-8cef-8a63ca4c70aa" name="Changes" comment="ed">
-      <change afterPath="$PROJECT_DIR$/src/LikedPost.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Time.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/828d8594-0835-49d7-a5d2-deb24b560c56.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/828d8594-0835-49d7-a5d2-deb24b560c56.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Database.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Database.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Post.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Post.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/PostService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/PostService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/UI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/UI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/UserService.java" afterDir="false" />
-    </list>
+    <list default="true" id="7a29d373-5ae1-4247-8cef-8a63ca4c70aa" name="Changes" comment="did many deeds" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -101,7 +90,7 @@
       <workItem from="1723355344645" duration="451000" />
       <workItem from="1723355805540" duration="11263000" />
       <workItem from="1723442826612" duration="8686000" />
-      <workItem from="1723529523646" duration="9629000" />
+      <workItem from="1723529523646" duration="9942000" />
     </task>
     <task id="LOCAL-00001" summary="privet">
       <option name="closed" value="true" />
@@ -207,7 +196,15 @@
       <option name="project" value="LOCAL" />
       <updated>1723458160429</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="did many deeds">
+      <option name="closed" value="true" />
+      <created>1723540378814</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1723540378814</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -260,7 +257,8 @@
     <MESSAGE value="юзер не может самолайкать" />
     <MESSAGE value="edit works" />
     <MESSAGE value="ed" />
-    <option name="LAST_COMMIT_MESSAGE" value="ed" />
+    <MESSAGE value="did many deeds" />
+    <option name="LAST_COMMIT_MESSAGE" value="did many deeds" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
