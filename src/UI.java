@@ -80,11 +80,8 @@ public class UI {
                 1. Show shits(posts)
                 2. Take a shit(post)
                 3. Your profile
-                4. 
-                5.
-                6.
-                7. Log out
-                8. Exit""");
+                4. Log out
+                5. Exit""");
         Scanner scanner = new Scanner(System.in);
         String choice = scanner.nextLine();
 
@@ -99,7 +96,7 @@ public class UI {
                 showYourProfile(user);
                 break;
             case "4":
-
+                start();
                 break;
             case "5":
 

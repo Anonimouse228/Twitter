@@ -5,15 +5,18 @@ import java.util.List;
 
 
 public class Database {
-    private static final int POSTS_PER_PAGE = 10;
-    private static final String JDBC_URL = "jdbc:postgresql://localhost:5432/Twitter";
+    private static final int POSTS_PER_PAGE = 5;
+
+
+    private static final String JDBC_URL = "jdbc:postgresql://database-1.cvyk6yk8cg2o.eu-north-1.rds.amazonaws.com:5432/postgres";
     private static final String USERNAME = "postgres";
-    private static final String PASSWORD = "Na260206";
+    private static final String PASSWORD1 = "8KId9ES";
+    private static final String PASSWORD2 = "ic8KdO4L";
 
 
     public static boolean logIn(User user) throws SQLException {
         String sql = "SELECT * FROM users WHERE login = ?";
-        Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
+        Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD1 + PASSWORD2);
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, user.getLogin());
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -30,7 +33,7 @@ public class Database {
 
     public static boolean register(User user) throws SQLException {
         String sql = "INSERT INTO users (login, password, isAdmin, createdAt) VALUES (?, ?, ?, ?)";
-        Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
+        Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD1 + PASSWORD2);
         if (isLoginTaken(user.getLogin())) {
             connection.close();
             return false;
@@ -50,7 +53,7 @@ public class Database {
 
     public static boolean createPost(int authorId, String login, String content) throws SQLException {
         String sql = "INSERT INTO posts (authorid, authorlogin, content, createdAt) VALUES (?, ?, ?, ?)";
-        Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
+        Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD1 + PASSWORD2);
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, authorId);
             preparedStatement.setString(2, login);
@@ -65,7 +68,7 @@ public class Database {
 
     public static Integer getUserIdByLogin(String login) throws SQLException {
         String sql = "SELECT id FROM users WHERE login = ?";
-        try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
+        try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD1 + PASSWORD2);
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
             preparedStatement.setString(1, login);
@@ -81,7 +84,7 @@ public class Database {
 
     public static User getUserData(int id) throws SQLException {
         String sql = "SELECT * FROM users WHERE id = ?";
-        try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
+        try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD1 + PASSWORD2);
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -103,7 +106,7 @@ public class Database {
 
     public static boolean editPost(String text, int postId) throws SQLException {
         String sql = "UPDATE posts SET content = ? WHERE id = ?";
-        Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
+        Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD1 + PASSWORD2);
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, text);
             preparedStatement.setInt(2, postId);
@@ -121,7 +124,7 @@ public class Database {
         String updatePostSql = "UPDATE posts SET numberoflikes = numberoflikes + 1 WHERE id = ?";
         String insertLikeSql = "INSERT INTO likes (postid, userid, isLike) VALUES (?, ?, ?)";
 
-        try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD)) {
+        try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD1 + PASSWORD2)) {
             connection.setAutoCommit(false);
             try (PreparedStatement checkLikeStmt = connection.prepareStatement(checkLikeSql);
                  PreparedStatement updatePostStmt = connection.prepareStatement(updatePostSql);
@@ -165,7 +168,7 @@ public class Database {
         String updatePostSql = "UPDATE posts SET numberoflikes = numberoflikes - 1 WHERE id = ?";
         String insertLikeSql = "INSERT INTO likes (postid, userid, isLike) VALUES (?, ?, ?)";
 
-        try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD)) {
+        try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD1 + PASSWORD2)) {
             connection.setAutoCommit(false);
             try (PreparedStatement checkLikeStmt = connection.prepareStatement(checkLikeSql);
                  PreparedStatement updatePostStmt = connection.prepareStatement(updatePostSql);
@@ -205,7 +208,7 @@ public class Database {
 
 
     public static List<Post> getFeed(int page) throws SQLException {
-        Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
+        Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD1 + PASSWORD2);
         String sql = "SELECT * FROM posts ORDER BY createdat DESC LIMIT ? OFFSET ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, 5);
@@ -231,7 +234,7 @@ public class Database {
     }
 
     public static int getAmountOfPosts() throws SQLException {
-        Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
+        Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD1 + PASSWORD2);
         String sql = "SELECT COUNT(id) FROM posts;";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -246,7 +249,7 @@ public class Database {
     }
 
     public static List<Post> getUserPosts(int userId, int page) throws SQLException {
-        Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
+        Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD1 + PASSWORD2);
         String sql = "SELECT * FROM posts WHERE authorid = ? ORDER BY createdat LIMIT 5 OFFSET ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, userId);
@@ -271,7 +274,7 @@ public class Database {
     }
 
     public static List<LikedPost> getUserLikes(int userId, int page) throws SQLException {
-        Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
+        Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD1 + PASSWORD2);
         String sql = "SELECT posts.*, likes.createdat AS likecreatedat, likes.islike FROM posts JOIN likes ON posts.id = likes.postid " +
                 "WHERE likes.userid = ? ORDER BY likes.createdat LIMIT 5 OFFSET ?;";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -299,7 +302,7 @@ public class Database {
     }
 
     public static int getAmountOfUserPosts(int userId) throws SQLException {
-        Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
+        Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD1 + PASSWORD2);
         String sql = "SELECT COUNT(*) AS post_count FROM users LEFT JOIN posts ON users.id = posts.authorid WHERE users.id = ?;";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, userId);
@@ -317,7 +320,7 @@ public class Database {
 
 
     public static boolean isPostAuthor(int postId, int userId) throws SQLException {
-        Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
+        Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD1 + PASSWORD2);
 
         String sql = "SELECT authorid FROM posts WHERE id = ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -340,7 +343,7 @@ public class Database {
 
     private static boolean isLoginTaken(String login) throws SQLException {
             String query = "SELECT COUNT(*) FROM users WHERE login = ?";
-            try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
+            try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD1 + PASSWORD2);
                  PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setString(1, login);
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -356,7 +359,7 @@ public class Database {
 
     public static boolean changeAboutMe(int userId, String text) throws SQLException {
         String sql = "UPDATE users SET aboutme = ? WHERE id = ?";
-        Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
+        Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD1 + PASSWORD2);
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, text);
             preparedStatement.setInt(2, userId);
@@ -370,7 +373,7 @@ public class Database {
 
     public static boolean hasExceededPostLimit(int userId) {
         String query = "SELECT COUNT(*) FROM posts WHERE authorid = ? AND createdat >= NOW() - INTERVAL '1 hour'";
-        try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
+        try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD1 + PASSWORD2);
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, userId);
             try (ResultSet rs = preparedStatement.executeQuery()) {
