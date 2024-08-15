@@ -305,8 +305,9 @@ public class UI {
 
     private static void post(User user) throws SQLException {
         Scanner scanner = new Scanner(System.in);
-        if (PostService.hasExceededPostLimit(user)) {
+        if (!PostService.hasExceededPostLimit(user)) {
             System.out.println("You posted too many times in the last hour, please wait");
+            mainMenu(user);
         }
         System.out.println("Enter the text(<140 symbols):");
         String content = scanner.nextLine();

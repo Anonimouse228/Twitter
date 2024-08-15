@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ArtifactsWorkspaceSettings">
     <artifacts-to-build>
-      <artifact name="Shitter" />
+      <artifact name="Twitter:jar" />
     </artifacts-to-build>
   </component>
   <component name="AutoImportSettings">
@@ -10,12 +10,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7a29d373-5ae1-4247-8cef-8a63ca4c70aa" name="Changes" comment="did many deeds">
-      <change beforePath="$PROJECT_DIR$/.idea/artifacts/Shitter.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/Shitter.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/META-INF/MANIFEST.MF" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Twitter.iml" beforeDir="false" afterPath="$PROJECT_DIR$/Twitter.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/commons-logging-1.3.2.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/postgresql-42.7.3.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-security-crypto-6.3.1.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/UI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/UI.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -115,7 +112,7 @@
       <workItem from="1723529523646" duration="14017000" />
       <workItem from="1723616452514" duration="6493000" />
       <workItem from="1723623009920" duration="8137000" />
-      <workItem from="1723709933297" duration="2037000" />
+      <workItem from="1723709933297" duration="5171000" />
     </task>
     <task id="LOCAL-00001" summary="privet">
       <option name="closed" value="true" />
@@ -253,7 +250,15 @@
       <option name="project" value="LOCAL" />
       <updated>1723626899561</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="did many deeds">
+      <option name="closed" value="true" />
+      <created>1723712637502</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1723712637502</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
