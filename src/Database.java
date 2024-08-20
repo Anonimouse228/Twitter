@@ -8,10 +8,10 @@ public class Database {
     private static final int POSTS_PER_PAGE = 5;
 
 
-    private static final String JDBC_URL = "jdbc:postgresql://database-1.cvyk6yk8cg2o.eu-north-1.rds.amazonaws.com:5432/postgres";
-    private static final String USERNAME = "postgres";
-    private static final String PASSWORD1 = "8KId9ES";
-    private static final String PASSWORD2 = "ic8KdO4L";
+    private static final String JDBC_URL = "nothing to see here";
+    private static final String USERNAME = "nothing to see here";
+    private static final String PASSWORD1 = "nothing to see here";
+    private static final String PASSWORD2 = "nothing to see here";
 
 
     public static boolean logIn(User user) throws SQLException {
